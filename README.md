@@ -12,7 +12,14 @@ a) Download the script
 curl -O https://github.com/hbenevides/scripts/blob/master/bibphil.sh
 ```
 
-b) How to use it.
+b) Make `bibphil.sh` executable.
+
+```bash
+$ chmod +x bibphil.sh
+```
+
+
+c) How to use it.
 
 ```bash
 $ ./bibphil https://philpapers.org/rec/ATTWOT
