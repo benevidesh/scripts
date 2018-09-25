@@ -9,7 +9,7 @@ A script to download philosophy papers from PhilPapers.
 a) Download the script
 
 ```bash
-curl -O https://github.com/hbenevides/scripts/blob/master/bibphil.sh
+curl -O https://raw.githubusercontent.com/hbenevides/scripts/master/bibphil.sh
 ```
 
 b) Make `bibphil.sh` executable.
