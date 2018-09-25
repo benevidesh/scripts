@@ -1,14 +1,10 @@
 #!/bin/bash
 
-
-
-
 PHILPAGE=$(mktemp)
 curl -s -o "$PHILPAGE" -O $1
-DOI=$(grep ">10.[0-9]" "$PHILPAGE" | sed -n 1p | sed 's/<[^>]*>//g' | sed 's/ //g')
+DOI=$(grep "[>]10.[0-9]" "$PHILPAGE" | sed -n 1p | sed 's/<[^>]*>//g' | sed 's/ //g')
 PDFLINK=$(grep -o 'https.*pdf' "$PHILPAGE" | sed -n 1p)
 SCI_HUB="http://sci-hub.tw/"
-
 
 function getbibentry(){
         local ENTRY=$(mktemp)
@@ -46,7 +42,7 @@ bibphil (){
 
         else
                 echo "No archive avaliable for download!"
-                exit 0
+                sleep 2
         
         fi
 
