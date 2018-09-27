@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Get Title 
-# grep  "<h1[^>]*>" ASARAK | sed 's/<[^>]*>//g'
-
-# Get author
-# grep "itemprop='author'" ASARAK | sed 's/<[^>]*>//g'
-
 PHILPAGE=$(mktemp)
 curl -s -o "$PHILPAGE" -O $1
 DOI=$(grep "[>]10.[0-9]" "$PHILPAGE" | sed -n 1p | sed 's/<[^>]*>//g' | sed 's/ //g')
