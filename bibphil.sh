@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Get Title 
+# grep  "<h1[^>]*>" ASARAK | sed 's/<[^>]*>//g'
+
+# Get author
+# grep "itemprop='author'" ASARAK | sed 's/<[^>]*>//g'
+
 PHILPAGE=$(mktemp)
 curl -s -o "$PHILPAGE" -O $1
 DOI=$(grep "[>]10.[0-9]" "$PHILPAGE" | sed -n 1p | sed 's/<[^>]*>//g' | sed 's/ //g')
@@ -18,11 +24,22 @@ function getbibentry(){
 
 }
 
-bibphil (){
+function pdfinfo(){
+
+        local TITLE=$(grep  "<h1[^>]*>" ${PHILPAGE} | sed 's/<[^>]*>//g')
+        local AUTHOR=$(grep "itemprop='author'" ${PHILPAGE} | sed 's/<[^>]*>//g')
+
+        echo "Title: $TITLE"
+        echo "Author: $AUTHOR"
+}
+
+main (){
 
         echo "BibPhil start!"
         echo "==="
-        echo "Searching for doi..."
+        echo "Looking for your pdf..."
+
+        pdfinfo
 
         if [ -n "$DOI" ]; then
 
@@ -46,8 +63,8 @@ bibphil (){
         
         fi
 
-        read -p "Would you like to save a corresponding bib entry for the pdf? [Y/N]: " WANTBIB
-        case "$WANTBIB" in
+        read -p "Save a bib entry for the pdf? [Y/N]: " -e ANSWER
+        case "$ANSWER" in
                 [yY] | [yY][eE][sS])
                         getbibentry
                         ;;
@@ -64,4 +81,4 @@ bibphil (){
 
 }
 
-bibphil $1
+main $1
