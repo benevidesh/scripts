@@ -6,15 +6,35 @@ DOI=$(grep "[>]10.[0-9]" "$PHILPAGE" | sed -n 1p | sed 's/<[^>]*>//g' | sed 's/ 
 PDFLINK=$(grep -o 'https.*pdf' "$PHILPAGE" | sed -n 1p)
 SCI_HUB="http://sci-hub.tw/"
 
+
+
 function getbibentry(){
-        local ENTRY=$(mktemp)
-        curl  -s -o "$ENTRY" -LH "Accept: application/x-bibtex" http://dx.doi.org/$DOI
-        read -p "Where to save the file (absolute path): " BIBFILE
-        echo "Making a bib entry"
-        cat "$ENTRY" >> "$BIBFILE"
-        echo "The following entry was added to $BIBFILE"
-        cat "$ENTRY"
-        echo " "
+
+        read -p "Save a bib entry for the pdf? [Y/N]: "  ANSWER
+        case "$ANSWER" in
+                [yY] | [yY][eE][sS])
+                        read -p "Where to save the file (absolute path): " BIBFILE
+                        echo "Making a bib entry"
+
+                        local ENTRY=$(mktemp)
+                        curl  -s -o "$ENTRY" -LH "Accept: application/x-bibtex" http://dx.doi.org/$DOI
+
+                        cat "$ENTRY" >> "$BIBFILE"
+                        echo "The following entry was added to $BIBFILE"
+                        cat "$ENTRY"
+                        echo " "
+                        ;;
+                [nN] | [nN][oO])
+                        echo "No bib entry was produced"
+                        exit 0
+                        ;;
+                *)
+                        echo "Invalid Answer =/"
+                        exit 1
+                        ;;
+        esac
+
+
 
 }
 
@@ -29,50 +49,40 @@ function pdfinfo(){
 
 main (){
 
-        echo "BibPhil start!"
-        echo "==="
+        echo "++++++++++++++++++++++++"
+        echo "+ BibPhil start!"
+        echo "++++++++++++++++++++++++"
         echo "Looking for your pdf..."
 
         pdfinfo
 
         if [ -n "$DOI" ]; then
 
-                echo "Doi: $DOI founded!"
                 echo "Downloading your pdf..."
                 curl -s -OL $(curl -s http://sci-hub.se/"$DOI" | grep location.href | grep -o http.*pdf)
-                echo "Download...ok"
 
         elif [ -n "$PDFLINK" ]; then
                 
-                echo "No digital object identifier (doi) founded!"
-                echo "Trying to downloading from PhilArchive..."
-
+                echo "Downloading your pdf..."
                 local FORMATNAME=$(grep  "nofollow" "$PHILPAGE" | sed 's/<[^>]*>//g' | sed -n 1p | sed 's/[ ,.?!-]/_/g' | sed 's/$/.pdf/g')
                 curl  -o "$FORMATNAME" -s -LO "$PDFLINK"
-                echo "Download...ok"
 
         else
                 echo "No archive avaliable for download!"
-                sleep 2
+                exit 0
+        fi
         
+        echo "Download finished!"
+        
+        if [[ -n "$DOI" ]] || [[ -n "$PDFLINK" ]]; then
+                getbibentry
         fi
 
-        read -p "Save a bib entry for the pdf? [Y/N]: " -e ANSWER
-        case "$ANSWER" in
-                [yY] | [yY][eE][sS])
-                        getbibentry
-                        ;;
-                [nN] | [nN][oO])
-                        echo "No bib entry was produced"
-                        exit 0
-                        ;;
-                *)
-                        echo "Invalid Answer =/"
-                        exit 1
-                        ;;
-        esac
 
-
+        echo "++++++++++++++++++++++++"
+        echo "+ BibPhil end!"
+        echo "++++++++++++++++++++++++"
+        
 }
 
 main $1
