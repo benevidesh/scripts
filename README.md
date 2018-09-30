@@ -26,4 +26,4 @@ c) How to use it.
 $ ./bibphil https://philpapers.org/rec/ATTWOT
 ```
 
-If you like use it system wide, then the file must be put on `/usr/local/bin`. 
+In order to use the script system wide you must move it to `/usr/local/bin`. That may require root privileges.
